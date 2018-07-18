@@ -9,6 +9,21 @@ public:
         this->y = y;
         this->z = z;
     }
+
+//    Point3 operator+(Point3 b){
+//        Point3 temp(x + b.x, y + b.y, z + b.z);
+//        return temp;
+//    }
+//
+//    Point3 operator-(Point3 b){
+//        Point3 temp(x - b.x, y - b.y, z - b.z);
+//        return temp;
+//    }
+//
+//    Point3 operator*(double b){
+//        Point3 temp(x * b, y * b, z * b);
+//        return temp;
+//    }
 };
 
 class Ray{
@@ -19,6 +34,18 @@ public:
         dir = b;
     }
 };
+
+
+double dot(Point3 a, Point3 b){
+    double dot = a.x*b.x + a.y*b.y + a.z*b.z;
+    return dot;
+}
+
+void cross(double a[], double b[], double c[]){
+    c[0]=a[1]*b[2]-a[2]*b[1];
+    c[1]=-a[0]*b[2]+a[2]*b[0];///
+    c[2]=a[0]*b[1]-a[1]*b[0];
+}
 
 class Object{
 public:
@@ -35,9 +62,9 @@ public:
     virtual Point3 getNormal(Point3 intersectionPoint) = 0;
     virtual double intersect(Ray *r, double current_color[3], int level) = 0;
     void setColor(double a, double b, double c){
-        color[0] = a;
-        color[1] = b;
-        color[2] = c;
+        this->color[0] = a;
+        this->color[1] = b;
+        this->color[2] = c;
     }
     void setShine(int sh){
         shine = sh;
@@ -73,14 +100,38 @@ public:
     }
 
     double calculateT(Ray *r){
-        return 0;
+        double t;
+
+        Point3 Ro(r->start.x - reference_point.x, r->start.y - reference_point.y, r->start.z - reference_point.z);
+        double a = dot(r->dir, r->dir);
+        double b = 2*dot(r->dir,Ro);
+        double c = dot(Ro,Ro) - length*length;
+        double d = b*b - 4*a*c;
+        if(d<0)return -1;
+        d = sqrt(d);
+        double t1 = (-b - d) / (2.0 * a);
+        double t2 = (-b + d) / (2.0 * a);
+        if(t2 > t1){
+            double temp = t1;
+            t1 = t2;
+            t2 = temp;
+        }
+        return t2;
     }
 
     Point3 getNormal(Point3 intersectionPoint){
         Point3 normal(2,5,4);
         return normal;
     }
+
     double intersect(Ray *r, double current_color[3], int level){
+        double t = calculateT(r);
+
+        if(t<=0)return -1;
+
+        if(level == 0)return t;
+
+        for(int i=0; i<3;i++)current_color[i] = color[i];
         return 0;
     }
 
@@ -89,10 +140,10 @@ public:
 void drawTile(double a)
 {
 	glBegin(GL_QUADS);{
-		glVertex3f( 0, 0,0);
-		glVertex3f( a,0,0);
+		glVertex3f(0,0,0);
+		glVertex3f(a,0,0);
 		glVertex3f(a,a,0);
-		glVertex3f(0, a,0);
+		glVertex3f(0,a,0);
 	}glEnd();
 }
 

@@ -16,11 +16,11 @@
 					<Add directory="OpenGL/include" />
 				</Compiler>
 				<Linker>
-					<Add library="OpenGL\lib\Glaux.lib" />
-					<Add library="OpenGL\lib\GLU32.LIB" />
-					<Add library="OpenGL\lib\glui32.lib" />
-					<Add library="OpenGL\lib\glut32.lib" />
-					<Add library="OpenGL\lib\OPENGL32.LIB" />
+					<Add library="OpenGL/lib/Glaux.lib" />
+					<Add library="OpenGL/lib/GLU32.LIB" />
+					<Add library="OpenGL/lib/glui32.lib" />
+					<Add library="OpenGL/lib/glut32.lib" />
+					<Add library="OpenGL/lib/OPENGL32.LIB" />
 					<Add directory="C:/Users/mrahman/Documents/CodeBlocks Projects/OpenGL/OpenGL/lib" />
 				</Linker>
 				<ExtraCommands>
@@ -46,16 +46,19 @@
 			<Add directory="OpenGL/include" />
 		</Compiler>
 		<Linker>
-			<Add library="OpenGL\lib\Glaux.lib" />
-			<Add library="OpenGL\lib\GLU32.LIB" />
-			<Add library="OpenGL\lib\glui32.lib" />
-			<Add library="OpenGL\lib\glut32.lib" />
-			<Add library="OpenGL\lib\OPENGL32.LIB" />
+			<Add library="OpenGL/lib/Glaux.lib" />
+			<Add library="OpenGL/lib/GLU32.LIB" />
+			<Add library="OpenGL/lib/glui32.lib" />
+			<Add library="OpenGL/lib/glut32.lib" />
+			<Add library="OpenGL/lib/OPENGL32.LIB" />
 		</Linker>
 		<ExtraCommands>
 			<Add after="xcopy /y OpenGL\DLL\glut32.dll $TARGET_OUTPUT_DIR" />
 		</ExtraCommands>
+		<Unit filename="bitmap_image.hpp" />
+		<Unit filename="header.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="scene.txt" />
 		<Extensions>
 			<code_completion />
 			<envvars />

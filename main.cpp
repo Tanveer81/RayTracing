@@ -91,31 +91,64 @@ void drawSquare(double a)
 
 void Capture(){
 
+    ///debug
+    for(int i=0; i<objects.size(); i++){
+        cout<<objects[i]->color[0]<<"  "<<objects[i]->color[1]<<"  "<<objects[i]->color[2]<<endl;
+	}
+
     bitmap_image image(imageWidth,imageWidth);
 
-    for(int i=0;i<200;i++){
-        for(int j=0;j<100;j++){
+    for(int i=0;i<imageWidth;i++){
+        for(int j=0;j<imageWidth;j++){
             image.set_pixel(i,j,0,0,0);
         }
     }
 
     double plane_distance = (windowHeight/2)/tan(fovy*pi/360);
 
-    Point3 topleft;
-    topleft.x = pos.x + l.x * plane_distance - r.x*windowWidth/2 + u.x*windowHeight/2;
-    topleft.y = pos.y + l.y * plane_distance - r.y*windowWidth/2 + u.y*windowHeight/2;
-    topleft.z = pos.z + l.z * plane_distance - r.z*windowWidth/2 + u.z*windowHeight/2;
+    Point3 *topleft = new Point3();
+    topleft->x = pos.x + l.x * plane_distance - r.x*windowWidth/2 + u.x*windowHeight/2;
+    topleft->y = pos.y + l.y * plane_distance - r.y*windowWidth/2 + u.y*windowHeight/2;
+    topleft->z = pos.z + l.z * plane_distance - r.z*windowWidth/2 + u.z*windowHeight/2;
 
-    double du = windowWidth / imageWidth;
-    double dv = windowHeight / imageHeight;
+    double du = (windowWidth*1.0) / imageWidth;
+    double dv = (windowHeight*1.0) / imageHeight;
 
     for (int i=0; i<imageWidth; i++){
-        for(int j=0;j<imageHeight;i++){
+        //cout<<i<<endl;
+        for(int j=0;j<imageWidth;j++){
+            //cout<<"i j "<<i<<" "<<j<<endl;
             int nearest = -1;
             double t_min = 9999999;
 
+            Point3 *corner = new Point3();
+            corner->x = topleft->x + r.x*j*du - u.x*i*dv;
+            corner->y = topleft->y + r.y*j*du - u.y*i*dv;
+            corner->z = topleft->z + r.z*j*du - u.z*i*dv;
+
+            Point3 dir(corner->x-pos.x, corner->y-pos.y, corner->z-pos.z);
+            Ray ray(pos, dir);
+
+            double color[3];
+
+            for(int k=0; k<objects.size();k++){
+                double t = objects[k]->intersect(&ray,color,0);
+                if(t<=0)continue;
+                else if(t<t_min){
+                    t_min = t;
+                    nearest = k;
+                }
+            }
+            if(nearest!=-1){
+                double t = objects[nearest]->intersect(&ray,color,1);
+                //cout<<objects[k]->color[0]<<"  "<<objects[k]->color[1]<<"  "<<objects[k]->color[2]<<endl;
+                image.set_pixel(j,i,color[0],color[1],color[2]);
+                //image.set_pixel(j,i,255,0,0);
+            }
         }
     }
+    image.save_image("output.bmp");
+    exit(0);
 }
 
 void keyboardListener(unsigned char key, int x,int y){
@@ -359,7 +392,7 @@ void display(){
 	****************************/
 	//add objects
 
-	drawAxes();
+	//drawAxes();
 
 	for(int i=0; i<objects.size(); i++){
         objects[i]->draw();
@@ -408,7 +441,31 @@ void loadTestData(){
 
     Point3 center(0,0,10);
     temp = new Sphere(center,10);
-    temp->setColor(1,0,0);
+    temp->setColor(255,0,0);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
+    temp->setShine(1);
+
+    objects.push_back(temp);
+
+    Point3 center2(15,20,20);
+    temp = new Sphere(center2,10);
+    temp->setColor(0,255,0);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
+    temp->setShine(1);
+
+    objects.push_back(temp);
+
+    Point3 center3(20,0,100);
+    temp = new Sphere(center3,10);
+    temp->setColor(0,255,255);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
+    temp->setShine(1);
+
+    objects.push_back(temp);
+
+    Point3 center4(25,50,10);
+    temp = new Sphere(center4,10);
+    temp->setColor(255,255,0);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(1);
 
@@ -417,27 +474,31 @@ void loadTestData(){
     Point3 light1(-50,50,50);
     lights.push_back(light1);
 
-    temp=new Floor(1000, 20);
-    temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
-    objects.push_back(temp);
+//    temp=new Floor(1000, 20);
+//    temp->setCoefficients(0.4,0.2,0.2,0.2);
+//    temp->setShine(1);
+//    objects.push_back(temp);
 
-    imageWidth = 768;
-    imageHeight = 768;
+    imageWidth = imageHeight = 768;
 
 }
 
 
 
 void test(){
+    Point3 *topleft = new Point3();
+    topleft->x = 1;
+    topleft->y = 2;
+    topleft->z = 3;
 
+    cout<<topleft->x;
 }
 
 int main(int argc, char **argv){
 
-
+    test();
     loadTestData();
-
+    cout<<imageWidth<<endl;
 
 	glutInit(&argc,argv);
 	glutInitWindowSize(500, 500);
