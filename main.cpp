@@ -441,48 +441,43 @@ void loadTestData(){
 
     imageWidth = imageHeight = 768;
 
-
+    recursion_level = 4;
 
     Object *temp;
 
-    Point3 center(0,0,10);
+    Point3 center(40,0,10);
     temp = new Sphere(center,10);
-    temp->setColor(1,0,0);
-    temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
-
-    objects.push_back(temp);
-
-    Point3 center2(15,20,20);
-    temp = new Sphere(center2,10);
     temp->setColor(0,1,0);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
+    temp->setShine(10);
 
     objects.push_back(temp);
 
-    Point3 center3(20,0,100);
-    temp = new Sphere(center3,10);
-    temp->setColor(0,1,1);
-    temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
+    Point3 center2(-30,60,20);
+    temp = new Sphere(center2,20);
+    temp->setColor(0,0,1);
+    temp->setCoefficients(0.2,0.2,0.4,0.2);
+    temp->setShine(15);
 
     objects.push_back(temp);
 
-    Point3 center4(25,50,10);
-    temp = new Sphere(center4,10);
-    temp->setColor(1,1,0);
-    temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
+    Point3 center3(-15.0, 15.0, 45.0);
+    temp = new Sphere(center3,15.0);
+    temp->setColor(1.0, 1.0, 0.0);
+    temp->setCoefficients(0.4,0.3,0.1,0.2);
+    temp->setShine(5);
 
     objects.push_back(temp);
 
 
-    Point3 light1(-50,0,0);
+    Point3 light1(70,70,70);
     lights.push_back(light1);
 
-    Point3 light2(-50,0,50);
+    Point3 light2(-70,70,70);
     lights.push_back(light2);
+
+
+
 
 //    temp=new Floor(1000, 20);
 //    temp->setCoefficients(0.4,0.2,0.2,0.2);

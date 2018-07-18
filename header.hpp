@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+extern int recursion_level;
+
 class Point3{
 public:
     double x,y,z;
@@ -143,7 +145,7 @@ public:
 
         if(level == 0)return t;
 
-        for(int i=0; i<3;i++)
+        for(int i=0; i<3; i++)
             current_color[i] = color[i] * co_efficients[0];
 
         Point3 intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
@@ -178,11 +180,40 @@ public:
                     current_color[k] += source_factor*phong*co_efficients[2]*color[k];
                 }
             }
+
+            if(level < recursion_level){
+
+                start.x = intersec.x + reflection.x * 1.0;
+                start.y = intersec.y + reflection.y * 1.0;
+                start.z = intersec.z + reflection.z * 1.0;
+
+                Ray reflectionRay(start, reflection);
+                int nearest = -1;
+                double t_min = 9999999;
+                double reflected_color[3];
+
+                for(int k=0; k<objects.size();k++){
+                    double t = objects[k]->calculateT(&reflectionRay);
+                    if(t<=0)continue;
+                    else if(t<t_min){
+                        t_min = t;
+                        nearest = k;
+                    }
+                }
+                if(nearest!=-1){
+                    double t = objects[nearest]->intersect(&reflectionRay,reflected_color,1);
+
+                    for (int k=0; k<3; k++){
+                        current_color[k] += reflected_color[k] * co_efficients[3];
+                    }
+                }
+            }
         }
+
+
 
         return t;
     }
-
 };
 
 void drawTile(double a)
