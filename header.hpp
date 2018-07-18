@@ -9,31 +9,26 @@ public:
         this->y = y;
         this->z = z;
     }
-
-//    Point3 operator+(Point3 b){
-//        Point3 temp(x + b.x, y + b.y, z + b.z);
-//        return temp;
-//    }
-//
-//    Point3 operator-(Point3 b){
-//        Point3 temp(x - b.x, y - b.y, z - b.z);
-//        return temp;
-//    }
-//
-//    Point3 operator*(double b){
-//        Point3 temp(x * b, y * b, z * b);
-//        return temp;
-//    }
 };
+
+Point3 normalize(Point3 b){
+    Point3 a;
+    double d = sqrt(b.x*b.x+ b.y*b.y+ b.z*b.z);
+    a.x = b.x / d;
+    a.y = b.y / d;
+    a.z = b.z / d;
+    return a;
+}
 
 class Ray{
 public:
     Point3 start, dir;
     Ray(Point3 a, Point3 b){
         start = a;
-        dir = b;
+        dir = normalize(b);
     }
 };
+
 
 
 double dot(Point3 a, Point3 b){
@@ -57,18 +52,25 @@ public:
     double source_factor = 1.0;
     double refractive_index = 1.5;
     Object(){}
+
     virtual void draw() = 0;
+
     virtual double calculateT(Ray *r) = 0;
+
     virtual Point3 getNormal(Point3 intersectionPoint) = 0;
+
     virtual double intersect(Ray *r, double current_color[3], int level) = 0;
+
     void setColor(double a, double b, double c){
-        this->color[0] = a;
-        this->color[1] = b;
-        this->color[2] = c;
+        this->color[0] = a*255;
+        this->color[1] = b*255;
+        this->color[2] = c*255;
     }
+
     void setShine(int sh){
         shine = sh;
     }
+
     void setCoefficients(double ambient, double diffuse, double specular, double reflection){
         co_efficients[0] = ambient;
         co_efficients[1] = diffuse;
@@ -76,6 +78,12 @@ public:
         co_efficients[3] = reflection;
     }
 
+    Point3 getReflection(Ray* r, Point3 normal){
+        double d = dot(r->dir,normal);
+        Point3 reflection(r->dir.x-normal.x*2.0*d, r->dir.y-normal.y*2.0*d, r->dir.z-normal.z*2.0*d);
+        reflection = normalize(reflection);
+        return reflection;
+    }
 };
 
 
@@ -99,6 +107,7 @@ public:
         }glPopMatrix();
     }
 
+
     double calculateT(Ray *r){
         double t;
 
@@ -119,10 +128,13 @@ public:
         return t2;
     }
 
-    Point3 getNormal(Point3 intersectionPoint){
-        Point3 normal(2,5,4);
+
+    Point3 getNormal(Point3 p){
+        Point3 normal(p.x-reference_point.x, p.y-reference_point.y, p.z-reference_point.z);
+        normal = normalize(normal);
         return normal;
     }
+
 
     double intersect(Ray *r, double current_color[3], int level){
         double t = calculateT(r);
@@ -131,8 +143,44 @@ public:
 
         if(level == 0)return t;
 
-        for(int i=0; i<3;i++)current_color[i] = color[i];
-        return 0;
+        for(int i=0; i<3;i++)
+            current_color[i] = color[i] * co_efficients[0];
+
+        Point3 intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
+        Point3 normal = getNormal(intersec);
+        Point3 reflection = getReflection(r , normal);
+
+        for(int i=0; i<lights.size();i++){
+            Point3 direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
+            direction = normalize(direction);
+            Point3 start(intersec.x+direction.x*1.0, intersec.y+direction.y*1.0, intersec.z+direction.z*1.0);
+            Ray L(start, direction);
+            bool obstacleFlag = false;
+            double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+
+            for(int j=0; j<objects.size(); j++){
+                double t = objects[j]->calculateT(&L);
+
+                if(t<0 || t>len )continue;
+                obstacleFlag = true;
+                break;
+            }
+
+            if(!obstacleFlag){
+                double lambert = dot(L.dir,normal);
+                double phong = dot(reflection,r->dir);
+
+                if(lambert < 0)lambert = 0;
+                if(phong < 0)phong = 0;
+
+                for (int k=0; k<3; k++){
+                    current_color[k] += source_factor*lambert*co_efficients[1]*color[k];
+                    current_color[k] += source_factor*phong*co_efficients[2]*color[k];
+                }
+            }
+        }
+
+        return t;
     }
 
 };
