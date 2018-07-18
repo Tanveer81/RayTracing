@@ -473,7 +473,7 @@ void loadTestData(){
     Point3 light1(70,70,70);
     lights.push_back(light1);
 
-    Point3 light2(-70,70,70);
+    Point3 light2(-70,70,-70);
     lights.push_back(light2);
 
 
@@ -488,15 +488,14 @@ void loadTestData(){
 
 }
 
+void freeMemory(){
+    vector<Point3>.swap(lights);
+    vector<Object*>.swap(objects);
+}
 
 
 void test(){
-    Point3 *topleft = new Point3();
-    topleft->x = 1;
-    topleft->y = 2;
-    topleft->z = 3;
 
-    cout<<topleft->x;
 }
 
 int main(int argc, char **argv){
@@ -525,5 +524,6 @@ int main(int argc, char **argv){
 
 	glutMainLoop();		//The main loop of OpenGL
 
+    freeMemory()
 	return 0;
 }

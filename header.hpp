@@ -86,6 +86,19 @@ public:
         reflection = normalize(reflection);
         return reflection;
     }
+
+    Point3 getRefraction(Ray *r, Point3 normal){
+        double N_dot_I = dot(normal,r->dir);
+        double k = 1.0 - refractive_index * refractive_index * (1.0 - N_dot_I * N_dot_I);
+        Point3 refraction(0, 0, 0);
+        if(k>=0){
+            refraction.x = refractive_index * r->dir.x - (refractive_index * N_dot_I + sqrt(k));
+            refraction.y = refractive_index * r->dir.y - (refractive_index * N_dot_I + sqrt(k));
+            refraction.z = refractive_index * r->dir.z - (refractive_index * N_dot_I + sqrt(k));
+            refraction = normalize(refraction);
+        }
+        return refraction;
+    }
 };
 
 
@@ -151,6 +164,7 @@ public:
         Point3 intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
         Point3 normal = getNormal(intersec);
         Point3 reflection = getReflection(r , normal);
+        Point3 refraction = getRefraction(r , normal);
 
         for(int i=0; i<lights.size();i++){
             Point3 direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
@@ -207,10 +221,38 @@ public:
                         current_color[k] += reflected_color[k] * co_efficients[3];
                     }
                 }
+
+                start.x = intersec.x + refraction.x * 1.0;
+                start.y = intersec.y + refraction.y * 1.0;
+                start.z = intersec.z + refraction.z * 1.0;
+
+                Ray refractionRay(start, refraction);
+                nearest = -1;
+                t_min = 9999999;
+                double refracted_color[3];
+
+                for(int k=0; k<objects.size();k++){
+                    double t = objects[k]->calculateT(&refractionRay);
+                    if(t<=0)continue;
+                    else if(t<t_min){
+                        t_min = t;
+                        nearest = k;
+                    }
+                }
+                if(nearest!=-1){
+                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,1);
+
+                    for (int k=0; k<3; k++){
+                        current_color[k] += refracted_color[k] * refractive_index;
+                    }
+                }
             }
+
+//            for(int c=0; c<3; c++){
+//                if(current_color[c] < 0)current_color[i] = 0;
+//                else if(current_color[c] > 255)current_color[i] = 255;
+//            }
         }
-
-
 
         return t;
     }
