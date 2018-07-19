@@ -184,7 +184,7 @@ public:
 
             if(!obstacleFlag){
                 double lambert = dot(L.dir,normal);
-                double phong = dot(reflection,r->dir);
+                double phong = pow(dot(reflection,r->dir),shine);
 
                 if(lambert < 0)lambert = 0;
                 if(phong < 0)phong = 0;
@@ -215,7 +215,7 @@ public:
                     }
                 }
                 if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&reflectionRay,reflected_color,1);
+                    double t = objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
 
                     for (int k=0; k<3; k++){
                         current_color[k] += reflected_color[k] * co_efficients[3];
@@ -240,7 +240,7 @@ public:
                     }
                 }
                 if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,1);
+                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
 
                     for (int k=0; k<3; k++){
                         current_color[k] += refracted_color[k] * refractive_index;
@@ -248,10 +248,10 @@ public:
                 }
             }
 
-//            for(int c=0; c<3; c++){
-//                if(current_color[c] < 0)current_color[i] = 0;
-//                else if(current_color[c] > 255)current_color[i] = 255;
-//            }
+            for(int c=0; c<3; c++){
+                if(current_color[c] < 0)current_color[i] = 0;
+                else if(current_color[c] > 255)current_color[i] = 255;
+            }
         }
 
         return t;
@@ -304,5 +304,4 @@ public:
     }
 
 };
-
 

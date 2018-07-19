@@ -82,7 +82,6 @@ void drawAxes()
 
 void drawSquare(double a)
 {
-    //glColor3f(1.0,0.0,0.0);
 	glBegin(GL_QUADS);{
 		glVertex3f( a, a,2);
 		glVertex3f( a,-a,2);
@@ -117,9 +116,7 @@ void Capture(){
     double dv = (windowHeight*1.0) / imageHeight;
 
     for (int i=0; i<imageWidth; i++){
-        //cout<<i<<endl;
         for(int j=0;j<imageWidth;j++){
-            //cout<<"i j "<<i<<" "<<j<<endl;
             int nearest = -1;
             double t_min = 9999999;
 
@@ -143,9 +140,7 @@ void Capture(){
             }
             if(nearest!=-1){
                 double t = objects[nearest]->intersect(&ray,color,1);
-                //cout<<objects[k]->color[0]<<"  "<<objects[k]->color[1]<<"  "<<objects[k]->color[2]<<endl;
                 image.set_pixel(j,i,color[0],color[1],color[2]);
-                //image.set_pixel(j,i,255,0,0);
             }
         }
     }
@@ -362,61 +357,36 @@ void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of th
 
 
 
-
-
 void display(){
-
 	//clear the display
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0,0,0,0);	//color black
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	/********************
 	/ set-up camera here
 	********************/
 	//load the correct matrix -- MODEL-VIEW matrix
 	glMatrixMode(GL_MODELVIEW);
-
 	//initialize the matrix
 	glLoadIdentity();
-
-    //gluLookAt(0,0,200,	0,0,0,	0,1,0);
     gluLookAt(pos.x, pos.y, pos.z, pos.x + l.x, pos.y + l.y, pos.z + l.z, u.x, u.y, u.z);
-
     //drawSquare(50);
-
 	//again select MODEL-VIEW
 	glMatrixMode(GL_MODELVIEW);
-
-
 	/****************************
 	/ Add your objects from here
 	****************************/
 	//add objects
-
 	//drawAxes();
-
 	for(int i=0; i<objects.size(); i++){
         objects[i]->draw();
 	}
     for(int i=0; i<lights.size(); i++){
         drawPoint(lights[i]);
 	}
-
-
-    //drawPoint(Point3(20,10,30),.5);
-
 	//ADD this line in the end --- if you use double buffer (i.e. GL_DOUBLE)
 	glutSwapBuffers();
 }
-
-
-void animate(){
-	angle+=0.05;
-	//codes for any changes in Models, Camera
-	glutPostRedisplay();
-}
-
 
 void init(){
 	//codes for initialization
@@ -437,10 +407,12 @@ void init(){
 	//far distance
 }
 
+void animate() {
+    glutPostRedisplay();
+}
+
 void loadTestData(){
-
     imageWidth = imageHeight = 768;
-
     recursion_level = 4;
 
     Object *temp;
@@ -450,7 +422,6 @@ void loadTestData(){
     temp->setColor(0,1,0);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(10);
-
     objects.push_back(temp);
 
     Point3 center2(-30,60,20);
@@ -458,72 +429,48 @@ void loadTestData(){
     temp->setColor(0,0,1);
     temp->setCoefficients(0.2,0.2,0.4,0.2);
     temp->setShine(15);
-
     objects.push_back(temp);
 
     Point3 center3(-15.0, 15.0, 45.0);
     temp = new Sphere(center3,15.0);
-    temp->setColor(1.0, 1.0, 0.0);
+    temp->setColor(1, 1, 0);
     temp->setCoefficients(0.4,0.3,0.1,0.2);
     temp->setShine(5);
-
     objects.push_back(temp);
-
 
     Point3 light1(70,70,70);
     lights.push_back(light1);
 
-    Point3 light2(-70,70,-70);
+    Point3 light2(-70,70,70);
     lights.push_back(light2);
-
-
-
 
 //    temp=new Floor(1000, 20);
 //    temp->setCoefficients(0.4,0.2,0.2,0.2);
 //    temp->setShine(1);
 //    objects.push_back(temp);
-
-
-
 }
 
 void freeMemory(){
-    vector<Point3>.swap(lights);
-    vector<Object*>.swap(objects);
-}
-
-
-void test(){
-
+    vector<Point3>().swap(lights);
+    vector<Object*>().swap(objects);
 }
 
 int main(int argc, char **argv){
-
-    test();
     loadTestData();
     cout<<imageWidth<<endl;
-
 	glutInit(&argc,argv);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);	//Depth, Double buffer, RGB color
-
 	glutCreateWindow("My OpenGL Program");
-
 	init();
-
 	glEnable(GL_DEPTH_TEST);	//enable Depth Testing
-
 	glutDisplayFunc(display);	//display callback function
 	glutIdleFunc(animate);		//what you want to do in the idle time (when no drawing is occuring)
-
 	glutKeyboardFunc(keyboardListener);
 	glutSpecialFunc(specialKeyListener);
 	glutMouseFunc(mouseListener);
-
 	glutMainLoop();		//The main loop of OpenGL
-
-    freeMemory()
+    freeMemory();
 	return 0;
 }
