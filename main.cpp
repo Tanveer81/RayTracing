@@ -413,76 +413,41 @@ void animate() {
 
 void loadTestData(){
     imageWidth = imageHeight = 768;
-    recursion_level = 2;
+    recursion_level = 3;
 
     Object *temp;
 
-    ///spheres
-//    Point3 center(40,0,10);
-//    temp = new Sphere(center,10);
-//    temp->setColor(0,1,0);
-//    temp->setCoefficients(0.4,0.2,0.2,0.2);
-//    temp->setShine(10);
-//    objects.push_back(temp);
-//
-//    Point3 center2(-30,60,20);
-//    temp = new Sphere(center2,20);
-//    temp->setColor(0,0,1);
-//    temp->setCoefficients(0.2,0.2,0.4,0.2);
-//    temp->setShine(15);
-//    objects.push_back(temp);
-//
-//    Point3 center3(-15.0, 15.0, 45.0);
-//    temp = new Sphere(center3,15.0);
-//    temp->setColor(1, 1, 0);
-//    temp->setCoefficients(0.4,0.3,0.1,0.2);
-//    temp->setShine(5);
-//    objects.push_back(temp);
+    Point3 center(40,0,10);
+    temp = new Sphere(center,10);
+    temp->setColor(1,0,0);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
+    temp->setShine(10);
+    objects.push_back(temp);
 
-    ///lights
+    Point3 center2(-30,60,20);
+    temp = new Sphere(center2,20);
+    temp->setColor(0,0,1);
+    temp->setCoefficients(0.2,0.2,0.4,0.2);
+    temp->setShine(15);
+    objects.push_back(temp);
+
+    Point3 center3(-15.0, 15.0, 45.0);
+    temp = new Sphere(center3,15.0);
+    temp->setColor(1, 1, 0);
+    temp->setCoefficients(0.4,0.3,0.1,0.2);
+    temp->setShine(5);
+    objects.push_back(temp);
+
     Point3 light1(70,70,70);
     lights.push_back(light1);
 
     Point3 light2(-70,70,70);
     lights.push_back(light2);
 
-    ///floor
     temp=new Floor(1000, 20);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(5);
     objects.push_back(temp);
-
-    ///triangles
-    Point3 a1(50,30,0);
-    Point3 b1(70,60,0);
-    Point3 c1(50,45,50);
-    Point3 q[3];q[0] = a1;q[1] = b1;q[2] = c1;
-    temp = new Triangle(q);
-    temp->setColor(1, 0, 0);
-    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-    temp->setShine(5);
-    objects.push_back(temp);
-
-//    Point3 a2(70, 60, 0);
-//    Point3 b2(30, 60, 0);
-//    Point3 c2(50, 45, 50);
-//    q[0] = a2;q[1] = b2;q[2] = c2;
-//    temp = new Triangle(q);
-//    temp->setColor(1, 0, 0);
-//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-//    temp->setShine(5);
-//    objects.push_back(temp);
-//
-//    Point3 a3(30, 60, 0);
-//    Point3 b3(50, 30, 0);
-//    Point3 c3(50, 45, 50);
-//    q[0] = a3;q[1] = b3;q[2] = c3;
-//    temp = new Triangle(q);
-//    temp->setColor(1, 0, 0);
-//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-//    temp->setShine(5);
-//    objects.push_back(temp);
-
 }
 
 void freeMemory(){
