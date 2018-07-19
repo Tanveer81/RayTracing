@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 extern int recursion_level;
-
+#include "bitmap_image.hpp"
 class Point3{
 public:
     double x,y,z;
@@ -291,16 +291,15 @@ public:
         Point3 normal = getNormal(reference_point);
         double nRo = dot(normal,r->start);
         double nRd = dot(normal, r->dir);
-        double t = ( (-1.0) * nRo ) / nRd;
+        double t = ( (-1) * nRo ) / nRd;
         return t;
     }
 
     Point3 getNormal(Point3 intersectionPoint){
         Point3 normal(0,0,1);
+        normalize(normal);
         return normal;
     }
-
-
 
     double intersect(Ray *r, double current_color[3], int level){
 
@@ -410,9 +409,11 @@ public:
             }
 
             for(int c=0; c<3; c++){
-                if(current_color[c] < 0)current_color[i] = 0;
-                else if(current_color[c] > 255)current_color[i] = 255;
+                if(current_color[c] < 0)current_color[c] = 0;
+                else if(current_color[c] > 255)current_color[c] = 255;
             }
+//            if(current_color[0] == 0)current_color[0] = current_color[1];
+//            if(current_color[2] == 0)current_color[2] = current_color[1];
         }
         return t;
     }

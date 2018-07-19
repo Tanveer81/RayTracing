@@ -413,13 +413,13 @@ void animate() {
 
 void loadTestData(){
     imageWidth = imageHeight = 768;
-    recursion_level = 4;
+    recursion_level = 3;
 
     Object *temp;
 
     Point3 center(40,0,10);
     temp = new Sphere(center,10);
-    temp->setColor(0,1,0);
+    temp->setColor(1,0,0);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(10);
     objects.push_back(temp);
@@ -446,7 +446,7 @@ void loadTestData(){
 
     temp=new Floor(1000, 20);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(1);
+    temp->setShine(5);
     objects.push_back(temp);
 }
 
