@@ -139,7 +139,7 @@ void Capture(){
                 }
             }
             if(nearest!=-1){
-                double t = objects[nearest]->intersect(&ray,color,1);
+                objects[nearest]->intersect(&ray,color,1);
                 image.set_pixel(j,i,color[0],color[1],color[2]);
             }
         }
@@ -444,10 +444,10 @@ void loadTestData(){
     Point3 light2(-70,70,70);
     lights.push_back(light2);
 
-//    temp=new Floor(1000, 20);
-//    temp->setCoefficients(0.4,0.2,0.2,0.2);
-//    temp->setShine(1);
-//    objects.push_back(temp);
+    temp=new Floor(1000, 20);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
+    temp->setShine(1);
+    objects.push_back(temp);
 }
 
 void freeMemory(){
