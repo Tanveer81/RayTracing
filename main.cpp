@@ -448,6 +448,44 @@ void loadTestData(){
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(5);
     objects.push_back(temp);
+
+    ///triangles
+    Point3 a1(50,30,0);
+    Point3 b1(70,60,0);
+    Point3 c1(50,45,50);
+    Point3 q[3];q[0] = a1;q[1] = b1;q[2] = c1;
+    temp = new Triangle(q);
+    temp->setColor(1, 0, 0);
+    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+    temp->setShine(5);
+    objects.push_back(temp);
+
+    Point3 a2(70, 60, 0);
+    Point3 b2(30, 60, 0);
+    Point3 c2(50, 45, 50);
+    q[0] = a2;q[1] = b2;q[2] = c2;
+    temp = new Triangle(q);
+    temp->setColor(1, 0, 0);
+    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+    temp->setShine(5);
+    objects.push_back(temp);
+
+    Point3 a3(30, 60, 0);
+    Point3 b3(50, 30, 0);
+    Point3 c3(50, 45, 50);
+    q[0] = a3;q[1] = b3;q[2] = c3;
+    temp = new Triangle(q);
+    temp->setColor(1, 0, 0);
+    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+    temp->setShine(5);
+    objects.push_back(temp);
+
+    Point3 r(0,0,0);
+    temp = new genQuad(1, 1, 1, 0, 0, 0, -20, -20, -20, 200, r, 0, 0, 5);
+    temp->setColor(1, 0, 1);
+    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+    temp->setShine(3);
+    objects.push_back(temp);
 }
 
 void freeMemory(){
