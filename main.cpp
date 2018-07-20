@@ -12,13 +12,13 @@ using namespace std;
 #define pi (2*acos(0.0))
 
 extern vector<Object*> objects;
-extern vector<Point3> lights;
+extern vector<Point> lights;
 
 
-Point3 pos(0,-100,10);
-Point3 l(0,1,0);
-Point3 r(1,0,0);
-Point3 u(0,0,1);
+Point pos(0,-100,10);
+Point l(0,1,0);
+Point r(1,0,0);
+Point u(0,0,1);
 
 double rx;
 double ry;
@@ -45,7 +45,7 @@ double fovy = 80;
 
 double thickness = 0.5;
 
-void drawPoint(Point3 point){
+void drawPoint(Point point){
 
     glColor3f(1.0,1.0,0);
 
@@ -107,7 +107,7 @@ void Capture(){
 
     double plane_distance = (windowHeight/2)/tan(fovy*pi/360);
 
-    Point3 *topleft = new Point3();
+    Point *topleft = new Point();
     topleft->x = pos.x + l.x * plane_distance - r.x*windowWidth/2 + u.x*windowHeight/2;
     topleft->y = pos.y + l.y * plane_distance - r.y*windowWidth/2 + u.y*windowHeight/2;
     topleft->z = pos.z + l.z * plane_distance - r.z*windowWidth/2 + u.z*windowHeight/2;
@@ -120,12 +120,12 @@ void Capture(){
             int nearest = -1;
             double t_min = 9999999;
 
-            Point3 *corner = new Point3();
+            Point *corner = new Point();
             corner->x = topleft->x + r.x*j*du - u.x*i*dv;
             corner->y = topleft->y + r.y*j*du - u.y*i*dv;
             corner->z = topleft->z + r.z*j*du - u.z*i*dv;
 
-            Point3 dir(corner->x-pos.x, corner->y-pos.y, corner->z-pos.z);
+            Point dir(corner->x-pos.x, corner->y-pos.y, corner->z-pos.z);
             Ray ray(pos, dir);
 
             double color[3];
@@ -416,36 +416,37 @@ void animate() {
 }
 
 void loadTestData(){
-    imageWidth = imageHeight = 768;
+    imageWidth = 768;
+    imageHeight = 768;
     recursion_level = 3;
 
     Object *temp;
 
-    Point3 center(40,0,10);
+    Point center(40,0,10);
     temp = new Sphere(center,10);
     temp->setColor(1,0,0);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(10);
     objects.push_back(temp);
 
-    Point3 center2(-30,60,20);
+    Point center2(-30,60,20);
     temp = new Sphere(center2,20);
     temp->setColor(0,0,1);
     temp->setCoefficients(0.2,0.2,0.4,0.2);
     temp->setShine(15);
     objects.push_back(temp);
 
-    Point3 center3(-15.0, 15.0, 45.0);
+    Point center3(-15.0, 15.0, 45.0);
     temp = new Sphere(center3,15.0);
     temp->setColor(1, 1, 0);
     temp->setCoefficients(0.4,0.3,0.1,0.2);
     temp->setShine(5);
     objects.push_back(temp);
 
-    Point3 light1(70,70,70);
+    Point light1(70,70,70);
     lights.push_back(light1);
 
-    Point3 light2(-70,70,70);
+    Point light2(-70,70,70);
     lights.push_back(light2);
 
     temp=new Floor(1000, 20);
@@ -454,19 +455,19 @@ void loadTestData(){
     objects.push_back(temp);
 
     ///triangles
-    Point3 a1(50,30,0);
-    Point3 b1(70,60,0);
-    Point3 c1(50,45,50);
-    Point3 q[3];q[0] = a1;q[1] = b1;q[2] = c1;
+    Point a1(50,30,0);
+    Point b1(70,60,0);
+    Point c1(50,45,50);
+    Point q[3];q[0] = a1;q[1] = b1;q[2] = c1;
     temp = new Triangle(q);
     temp->setColor(1, 0, 0);
     temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
     temp->setShine(5);
     objects.push_back(temp);
 
-    Point3 a2(70, 60, 0);
-    Point3 b2(30, 60, 0);
-    Point3 c2(50, 45, 50);
+    Point a2(70, 60, 0);
+    Point b2(30, 60, 0);
+    Point c2(50, 45, 50);
     q[0] = a2;q[1] = b2;q[2] = c2;
     temp = new Triangle(q);
     temp->setColor(1, 0, 0);
@@ -474,9 +475,9 @@ void loadTestData(){
     temp->setShine(5);
     objects.push_back(temp);
 
-    Point3 a3(30, 60, 0);
-    Point3 b3(50, 30, 0);
-    Point3 c3(50, 45, 50);
+    Point a3(30, 60, 0);
+    Point b3(50, 30, 0);
+    Point c3(50, 45, 50);
     q[0] = a3;q[1] = b3;q[2] = c3;
     temp = new Triangle(q);
     temp->setColor(1, 0, 0);
@@ -484,8 +485,8 @@ void loadTestData(){
     temp->setShine(5);
     objects.push_back(temp);
 
-    Point3 r(0,0,0);
-    temp = new genQuad(1, 1, 1, 0, 0, 0, -20, -20, -20, 200, r, 0, 0, 5);
+    temp = new genQuad(0, 0, 0 , 0, 0, 5);
+    temp->setVar(1, 1, 1, 0, 0, 0, -20, -20, -20, 200);
     temp->setColor(1, 0, 1);
     temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
     temp->setShine(3);
@@ -493,7 +494,7 @@ void loadTestData(){
 }
 
 void freeMemory(){
-    vector<Point3>().swap(lights);
+    vector<Point>().swap(lights);
     vector<Object*>().swap(objects);
 }
 
