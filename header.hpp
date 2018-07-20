@@ -5,12 +5,12 @@ extern int recursion_level;
 class Point{
 public:
     double x,y,z;
-    Point(){}
-    Point(double x, double y, double z){
-        this->x = x;
-        this->y = y;
-        this->z = z;
+
+    Point(double a, double b, double c){
+        x = a;y = b;z = c;
     }
+
+    Point(){}
 };
 
 Point normalize(Point b){
@@ -32,14 +32,16 @@ public:
 };
 
 
-
 double dot(Point a, Point b){
     double dot = a.x*b.x + a.y*b.y + a.z*b.z;
     return dot;
 }
 
 Point cross(Point a, Point b){
-    Point c(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
+    double x = a.y*b.z - a.z*b.y;
+    double y = a.z*b.x - a.x*b.z;
+    double z = a.x*b.y - a.y*b.x;
+    Point c(x,y,z);
     return c;
 }
 
@@ -50,39 +52,55 @@ public:
     int shine;
     double color[3];
     double co_efficients[4];
-    Object(){}
+
     virtual void draw() = 0;
     virtual double calculateT(Ray *r) = 0;
     virtual Point getNormal(Point intersectionPoint) = 0;
     virtual double intersect(Ray *r, double current_color[3], int level) = 0;
     virtual void setVar(double A,double B,double C,double D,double E,double F,double G,double H,double I,double J) = 0;
+
     void setColor(double a, double b, double c){
         this->color[0] = a*255;
         this->color[1] = b*255;
         this->color[2] = c*255;
     }
+
     void setShine(int sh){
-        shine = sh;
+        this->shine = sh;
     }
+
+    Object(){}
+
     void setCoefficients(double ambient, double diffuse, double specular, double reflection){
-        co_efficients[0] = ambient;
-        co_efficients[1] = diffuse;
-        co_efficients[2] = specular;
-        co_efficients[3] = reflection;
+        this->co_efficients[0] = ambient;
+        this->co_efficients[1] = diffuse;
+        this->co_efficients[2] = specular;
+        this->co_efficients[3] = reflection;
     }
+
     double source_factor = 1.0;
     double refractive_index = 2.0;
+
     Point getReflection(Ray* r, Point normal){
         double d = dot(r->dir,normal);
-        Point reflection(r->dir.x-normal.x*2.0*d, r->dir.y-normal.y*2.0*d, r->dir.z-normal.z*2.0*d);
+        double a = r->dir.x-normal.x*2.0*d;
+        double b = r->dir.y-normal.y*2.0*d;
+        double c = r->dir.z-normal.z*2.0*d;
+        Point reflection(a,b,c);
         reflection = normalize(reflection);
         return reflection;
     }
+
     Point getRefraction(Ray *r, Point normal){
         double N_dot_I = dot(normal,r->dir);
         double k = 1.0 - refractive_index * refractive_index * (1.0 - N_dot_I * N_dot_I);
-        Point refraction(0, 0, 0);
-        if(k>=0){
+        Point refraction;
+        if(k<0){
+            refraction.x = 0;
+            refraction.y = 0;
+            refraction.z = 0;
+        }
+        else{
             refraction.x = refractive_index * r->dir.x - normal.x*(refractive_index * N_dot_I + sqrt(k));
             refraction.y = refractive_index * r->dir.y - normal.y*(refractive_index * N_dot_I + sqrt(k));
             refraction.z = refractive_index * r->dir.z - normal.z*(refractive_index * N_dot_I + sqrt(k));
@@ -132,7 +150,10 @@ public:
 
 
     Point getNormal(Point p){
-        Point normal(p.x-reference_point.x, p.y-reference_point.y, p.z-reference_point.z);
+        double a = p.x-reference_point.x;
+        double b = p.y-reference_point.y;
+        double c = p.z-reference_point.z;
+        Point normal(a,b,c);
         normal = normalize(normal);
         return normal;
     }
@@ -268,15 +289,23 @@ public:
         width = FloorWidth;
     }
     void draw(){
-        int tiles = abs(reference_point.x*2/length);
+        int tiles = reference_point.x*2;
+        tiles /= 2;
+        tiles = abs(tiles);
         for(int i=0;i<tiles;i++){
             for(int j=0; j<tiles;j++){
-                if((i+j) % 2)glColor3f(0,0,0);
-                else glColor3f(1,1,1);
-                glPushMatrix();{
+                if((i+j) % 2 == 0){
+                    glColor3f(1,1,1);
+                }
+                else{
+                    glColor3f(0,0,0);
+                }
+                glPushMatrix();
+                {
                     glTranslatef(reference_point.x+length*i,reference_point.y+length*j,reference_point.z);
                     drawTile(length);
-                }glPopMatrix();
+                }
+                glPopMatrix();
             }
         }
     }
@@ -287,13 +316,13 @@ public:
         Point normal = getNormal(reference_point);
         double nRo = dot(normal,r->start);
         double nRd = dot(normal, r->dir);
-        double t = ( (-1) * nRo ) / nRd;
+        nRo = (-1) * nRo;
+        double t = nRo  / nRd;
         return t;
     }
 
     Point getNormal(Point intersectionPoint){
         Point normal(0,0,1);
-        normalize(normal);
         return normal;
     }
 
@@ -401,6 +430,7 @@ class Triangle : public Object{
 public:
     Point a,b,c;
     Point p[3];
+
     Triangle(Point a[]){
         for(int i=0; i<3; i++){
             p[i]=a[i];
@@ -409,7 +439,10 @@ public:
     }
 
     void draw(){
-        glColor3f(color[0],color[1],color[2]);
+        double r = color[0];
+        double g = color[1];
+        double b = color[2];
+        glColor3f(r, g, b);
         glBegin(GL_TRIANGLES);
         {
             for(int i=0; i<3; i++){
@@ -423,11 +456,17 @@ public:
 
     Point getNormal(Point intersectionPoint){
 
-        Point a(p[1].x-p[0].x,p[1].y-p[0].y,p[1].z-p[0].z);
+        double qx = p[1].x-p[0].x;
+        double qy = p[1].y-p[0].y;
+        double qz = p[1].z-p[0].z;
+        Point q(qx, qy, qz);
 
-        Point b(p[2].x-p[0].x,p[2].y-p[0].y,p[2].z-p[0].z);
+        double px = p[2].x-p[0].x;
+        double py = p[2].y-p[0].y;
+        double pz = p[2].z-p[0].z;
+        Point p(px, py, pz);
 
-        Point normal = cross(a,b);
+        Point normal = cross(q,p);
 
         normalize(normal);
 
@@ -440,15 +479,26 @@ public:
         double epsilon = 0.0000001;
         double a,f,u,v;
 
-        Point edge1(p[1].x-p[0].x, p[1].y-p[0].y, p[1].z-p[0].z);
-        Point edge2(p[2].x-p[0].x, p[2].y-p[0].y, p[2].z-p[0].z);
+        double qx = p[1].x-p[0].x;
+        double qy = p[1].y-p[0].y;
+        double qz = p[1].z-p[0].z;
+        Point edge1(qx, qy, qz);
+
+        double px = p[2].x-p[0].x;
+        double py = p[2].y-p[0].y;
+        double pz = p[2].z-p[0].z;
+        Point edge2(px, py, pz);
 
         Point h = cross(r->dir,edge2);
         a = dot(edge1,h);
         if (a > -epsilon && a < epsilon)return -1;
         f = 1.0 / a;
 
-        Point s(r->start.x-p[0].x,r->start.y-p[0].y,r->start.z-p[0].z);
+        double sx = r->start.x-p[0].x;
+        double sy = r->start.y-p[0].y;
+        double sz = r->start.z-p[0].z;
+        Point s(sx, sy, sz);
+
         u = f * dot(s,h);
         if (u < 0 || u > 1)return -1;
 
@@ -697,6 +747,35 @@ public:
 
                     for (int j=0; j<3; j++){
                         current_color[j] += reflected_color[j] * co_efficients[3];
+                    }
+                }
+
+                                start.x = intersec.x + refraction.x * 1.0;
+                start.y = intersec.y + refraction.y * 1.0;
+                start.z = intersec.z + refraction.z * 1.0;
+
+                Ray refractionRay(start, refraction);
+                nearest = -1;
+                double refracted_color[3];
+                t_min = 9999999;
+
+                for(int j=0; j<objects.size();j++){
+
+                    double t = objects[j]->calculateT(&refractionRay);
+
+                    if(t<=0)continue;
+
+                    else if(t<t_min){
+                        t_min = t;
+                        nearest = j;
+                    }
+                }
+
+                if(nearest!=-1){
+                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
+
+                    for (int j=0; j<3; j++){
+                        current_color[j] += refracted_color[j] * refractive_index;
                     }
                 }
             }

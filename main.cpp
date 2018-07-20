@@ -125,26 +125,30 @@ void Capture(){
             corner->y = topleft->y + r.y*j*du - u.y*i*dv;
             corner->z = topleft->z + r.z*j*du - u.z*i*dv;
 
-            Point dir(corner->x-pos.x, corner->y-pos.y, corner->z-pos.z);
+            double dirx = corner->x - pos.x;
+            double diry = corner->y - pos.y;
+            double dirz = corner->z - pos.z;
+            Point dir(dirx, diry, dirz);
+
             Ray ray(pos, dir);
 
-            double color[3];
+            double set_color[3];
 
             for(int k=0; k<objects.size();k++){
 
-                double t = objects[k]->intersect(&ray,color,0);
+                double t = objects[k]->intersect(&ray,set_color,0);
 
                 if(t<=0)continue;
 
-                else if(t<t_min){
+                if(t<t_min){
                     t_min = t;
                     nearest = k;
                 }
             }
 
             if(nearest!=-1){
-                objects[nearest]->intersect(&ray,color,1);
-                image.set_pixel(j,i,color[0],color[1],color[2]);
+                objects[nearest]->intersect(&ray,set_color,1);
+                image.set_pixel(j,i,set_color[0],set_color[1],set_color[2]);
             }
         }
     }
@@ -292,36 +296,36 @@ void keyboardListener(unsigned char key, int x,int y){
 void specialKeyListener(int key, int x,int y){
 	switch(key){
 		case GLUT_KEY_UP:		//up arrow key
-			pos.x += 2*l.x;
-			pos.y += 2*l.y;
-			pos.z += 2*l.z;
+			pos.x += 10*l.x;
+			pos.y += 10*l.y;
+			pos.z += 10*l.z;
 			break;
 		case GLUT_KEY_DOWN:		// down arrow key
-			pos.x -= 2*l.x;
-			pos.y -= 2*l.y;
-			pos.z -= 2*l.z;
+			pos.x -= 10*l.x;
+			pos.y -= 10*l.y;
+			pos.z -= 10*l.z;
 			break;
 
 		case GLUT_KEY_RIGHT:
-            pos.x += 2*r.x;
-			pos.y += 2*r.y;
-			pos.z += 2*r.z;
+            pos.x += 10*r.x;
+			pos.y += 10*r.y;
+			pos.z += 10*r.z;
 			break;
 		case GLUT_KEY_LEFT:
-			pos.x -= 2*r.x;
-			pos.y -= 2*r.y;
-			pos.z -= 2*r.z;
+			pos.x -= 10*r.x;
+			pos.y -= 10*r.y;
+			pos.z -= 10*r.z;
 			break;
 
 		case GLUT_KEY_PAGE_UP:
-		    pos.x += 2*u.x;
-			pos.y += 2*u.y;
-			pos.z += 2*u.z;
+		    pos.x += 10*u.x;
+			pos.y += 10*u.y;
+			pos.z += 10*u.z;
 			break;
 		case GLUT_KEY_PAGE_DOWN:
-		    pos.x -= 2*u.x;
-			pos.y -= 2*u.y;
-			pos.z -= 2*u.z;
+		    pos.x -= 10*u.x;
+			pos.y -= 10*u.y;
+			pos.z -= 10*u.z;
 			break;
 
 		case GLUT_KEY_INSERT:
