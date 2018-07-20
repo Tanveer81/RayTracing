@@ -131,13 +131,17 @@ void Capture(){
             double color[3];
 
             for(int k=0; k<objects.size();k++){
+
                 double t = objects[k]->intersect(&ray,color,0);
+
                 if(t<=0)continue;
+
                 else if(t<t_min){
                     t_min = t;
                     nearest = k;
                 }
             }
+
             if(nearest!=-1){
                 objects[nearest]->intersect(&ray,color,1);
                 image.set_pixel(j,i,color[0],color[1],color[2]);

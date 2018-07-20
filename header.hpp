@@ -172,7 +172,7 @@ public:
             for(int j=0; j<objects.size(); j++){
                 double t = objects[j]->calculateT(&L);
 
-                if(t<0 || abs(t)>len )continue;
+                if( abs(t)>len || t<0 )continue;
                 obstacleFlag = true;
                 break;
             }
@@ -227,13 +227,17 @@ public:
                 double refracted_color[3];
 
                 for(int k=0; k<objects.size();k++){
+
                     double t = objects[k]->calculateT(&refractionRay);
+
                     if(t<=0)continue;
+
                     else if(t<t_min){
                         t_min = t;
                         nearest = k;
                     }
                 }
+
                 if(nearest!=-1){
                     double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
 
@@ -335,10 +339,13 @@ public:
             double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
 
             for(int j=0; j<objects.size(); j++){
+
                 double t = objects[j]->calculateT(&L);
 
-                if(t<0 || abs(t)>len )continue;
+                if(abs(t)>len || t<0)continue;
+
                 obstacleFlag = true;
+
                 break;
             }
 
@@ -369,11 +376,16 @@ public:
                 double reflected_color[3];
 
                 for(int k=0; k<objects.size();k++){
+
                     double t = objects[k]->calculateT(&reflectionRay);
+
                     if(t<=0)continue;
-                    else if(t<t_min){
+
+                     if(t<t_min){
                         t_min = t;
+
                         nearest = k;
+
                     }
                 }
                 if(nearest!=-1){
@@ -516,13 +528,18 @@ public:
                 double reflected_color[3];
 
                 for(int k=0; k<objects.size();k++){
+
                     double t = objects[k]->calculateT(&reflectionRay);
+
                     if(t<=0)continue;
-                    else if(t<t_min){
+
+                    if(t<t_min){
                         t_min = t;
+
                         nearest = k;
                     }
                 }
+
                 if(nearest!=-1){
                     double t = objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
 
@@ -644,10 +661,13 @@ public:
             double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
 
             for(int j=0; j<objects.size(); j++){
+
                 double t = objects[j]->calculateT(&L);
 
-                if(t<0 || abs(t)>len )continue;
+                if(abs(t)>len || t<0  )continue;
+
                 obstacleFlag = true;
+
                 break;
             }
 
