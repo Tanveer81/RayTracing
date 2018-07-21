@@ -132,11 +132,11 @@ void Capture(){
 
             Ray ray(pos, dir);
 
-            double set_color[3];
+            double dummyColorAt[3];
 
             for(int k=0; k<objects.size();k++){
 
-                double t = objects[k]->intersect(&ray,set_color,0);
+                double t = objects[k]->intersect(&ray,dummyColorAt,0);
 
                 if(t<=0)continue;
 
@@ -146,9 +146,11 @@ void Capture(){
                 }
             }
 
+            //double colorAt[3];
+
             if(nearest!=-1){
-                objects[nearest]->intersect(&ray,set_color,1);
-                image.set_pixel(j,i,set_color[0],set_color[1],set_color[2]);
+                objects[nearest]->intersect(&ray,dummyColorAt,1);
+                image.set_pixel(j,i,dummyColorAt[0],dummyColorAt[1],dummyColorAt[2]);
             }
         }
     }
@@ -440,38 +442,38 @@ void loadTestData(){
 //    temp->setShine(15);
 //    objects.push_back(temp);
 
-    Point center3(-15.0, 15.0, 45.0);
-    temp = new Sphere(center3,15.0);
-    temp->setColor(1, 1, 0);
-    temp->setCoefficients(0.4,0.3,0.1,0.2);
-    temp->setShine(5);
-    objects.push_back(temp);
+//    Point center3(-15.0, 15.0, 45.0);
+//    temp = new Sphere(center3,15.0);
+//    temp->setColor(1, 1, 0);
+//    temp->setCoefficients(0.4,0.3,0.1,0.2);
+//    temp->setShine(5);
+//    objects.push_back(temp);
 
-    Point light1(70,70,70);
+    Point light1(70,-10,70);
     lights.push_back(light1);
 
-    Point light2(-70,70,70);
+    Point light2(-70,-10,70);
     lights.push_back(light2);
 
     temp=new Floor(1000, 20);
     temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(5);
     objects.push_back(temp);
-
+Point q[3];
     ///triangles
-//    Point a1(50,30,0);
-//    Point b1(70,60,0);
-//    Point c1(50,45,50);
-//    Point q[3];q[0] = a1;q[1] = b1;q[2] = c1;
+//    Point a1(-60, 0, 0);
+//    Point b1(-30, 0, 0);
+//    Point c1(-45, 15, 15);
+//    q[0] = a1;q[1] = b1;q[2] = c1;
 //    temp = new Triangle(q);
 //    temp->setColor(1, 0, 0);
 //    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
 //    temp->setShine(5);
 //    objects.push_back(temp);
 //
-//    Point a2(70, 60, 0);
-//    Point b2(30, 60, 0);
-//    Point c2(50, 45, 50);
+//    Point a2(0, 0, 0);
+//    Point b2(30, 0, 0);
+//    Point c2(15, -15, 15);
 //    q[0] = a2;q[1] = b2;q[2] = c2;
 //    temp = new Triangle(q);
 //    temp->setColor(1, 0, 0);
@@ -622,8 +624,8 @@ void freeMemory(){
 }
 
 int main(int argc, char **argv){
-    //LoadActualData();
-    loadTestData();
+    LoadActualData();
+//    loadTestData();
 	glutInit(&argc,argv);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(0, 0);
