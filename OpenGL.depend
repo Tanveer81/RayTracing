@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1532081638 source:e:\l-4 t-2\graphics sessional\offline 4\offline4\main.cpp
+1532156943 source:e:\l-4 t-2\graphics sessional\offline 4\offline4\main.cpp
 	<stdio.h>
 	<stdlib.h>
 	<math.h>
@@ -13,7 +13,7 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1532088553 e:\l-4 t-2\graphics sessional\offline 4\offline4\header.hpp
+1532159698 e:\l-4 t-2\graphics sessional\offline 4\offline4\header.hpp
 	<bits/stdc++.h>
 	"bitmap_image.hpp"
 
@@ -26,4 +26,6 @@
 	<iterator>
 	<limits>
 	<string>
+
+1532148500 source:e:\l-4 t-2\graphics sessional\offline 4\offline4\temp.c
 

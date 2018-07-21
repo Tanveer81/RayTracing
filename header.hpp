@@ -160,31 +160,53 @@ public:
 
 
     double intersect(Ray *r, double current_color[3], int level){
+
         double t = calculateT(r);
 
         if(t<=0)return -1;
 
         if(level == 0)return t;
 
-        Point intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
+        double intersecx = r->start.x+r->dir.x*t;
+        double intersecy = r->start.y+r->dir.y*t;
+        double intersecz = r->start.z+r->dir.z*t;
+        Point intersec(intersecx, intersecy, intersecz);
+
         Point normal = getNormal(intersec);
+
         Point reflection = getReflection(r , normal);
+
         Point refraction = getRefraction(r , normal);
 
-        for(int i=0; i<3; i++)current_color[i] = color[i] * co_efficients[0];
+        for(int i=0; i<3; i++)
+            current_color[i] = color[i] * co_efficients[0];
 
         for(int i=0; i<lights.size();i++){
-            Point direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
+
+            double dirx = lights[i].x-intersec.x;
+            double diry = lights[i].y-intersec.y;
+            double dirz = lights[i].z-intersec.z;
+            Point direction(dirx, diry, dirz);
+
+            double len = sqrt(direction.x*direction.x +
+                               direction.y*direction.y +
+                                direction.z*direction.z);
+
             direction = normalize(direction);
-            Point start(intersec.x+direction.x*1.0, intersec.y+direction.y*1.0, intersec.z+direction.z*1.0);
+
+            double startx = intersec.x+direction.x*1.0;
+            double starty = intersec.y+direction.y*1.0;
+            double startz = intersec.z+direction.z*1.0;
+            Point start(startx, starty, startz);
+
             Ray L(start, direction);
-            bool obstacleFlag = 0;
-            double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+
+            bool obstacleFlag = false;
 
             for(int j=0; j<objects.size(); j++){
                 double t = objects[j]->calculateT(&L);
-                if(!( abs(t)>len || t<0 )){
-                    obstacleFlag = 1;
+                if( t <= len && t>0 ){
+                    obstacleFlag = true;
                     break;
                 }
             }
@@ -222,7 +244,7 @@ public:
                     }
                 }
                 if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
+                    objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
 
                     for (int j=0; j<3; j++){
                         current_color[j] += reflected_color[j] * co_efficients[3];
@@ -329,7 +351,12 @@ public:
     double intersect(Ray *r, double current_color[3], int level){
 
         double t = calculateT(r);
-        Point intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
+
+        double intersecx = r->start.x+r->dir.x*t;
+        double intersecy = r->start.y+r->dir.y*t;
+        double intersecz = r->start.z+r->dir.z*t;
+        Point intersec(intersecx, intersecy, intersecz);
+
         if(intersec.x<reference_point.x || intersec.y<reference_point.y || intersec.x>((-1) * reference_point.x) || intersec.y>((-1) * reference_point.y)){
             return -1;
         }
@@ -352,17 +379,31 @@ public:
         Point refraction = getRefraction(r , normal);
 
         for(int i=0; i<lights.size();i++){
-            Point direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
+
+            double dirx = lights[i].x-intersec.x;
+            double diry = lights[i].y-intersec.y;
+            double dirz = lights[i].z-intersec.z;
+            Point direction(dirx, diry, dirz);
+
+            double len = sqrt(direction.x*direction.x +
+                               direction.y*direction.y +
+                                direction.z*direction.z);
+
             direction = normalize(direction);
-            Point start(intersec.x+direction.x*1.0, intersec.y+direction.y*1.0, intersec.z+direction.z*1.0);
+
+            double startx = intersec.x+direction.x*1.0;
+            double starty = intersec.y+direction.y*1.0;
+            double startz = intersec.z+direction.z*1.0;
+            Point start(startx, starty, startz);
+
             Ray L(start, direction);
-            bool obstacleFlag = 0;
-            double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+
+            bool obstacleFlag = false;
 
             for(int j=0; j<objects.size(); j++){
                 double t = objects[j]->calculateT(&L);
-                if(!( abs(t)>len || t<0 )){
-                    obstacleFlag = 1;
+                if( t <= len && t>0 ){
+                    obstacleFlag = true;
                     break;
                 }
             }
@@ -399,11 +440,9 @@ public:
 
                     if(t<=0)continue;
 
-                     if(t<t_min){
+                    if(t<t_min){
                         t_min = t;
-
                         nearest = j;
-
                     }
                 }
                 if(nearest!=-1){
@@ -413,6 +452,36 @@ public:
                         current_color[j] += reflected_color[j] * co_efficients[3];
                     }
                 }
+
+                start.x = intersec.x + refraction.x * 1.0;
+                start.y = intersec.y + refraction.y * 1.0;
+                start.z = intersec.z + refraction.z * 1.0;
+
+                Ray refractionRay(start, refraction);
+                nearest = -1;
+                double refracted_color[3];
+                t_min = 9999999;
+
+                for(int j=0; j<objects.size();j++){
+
+                    double t = objects[j]->calculateT(&refractionRay);
+
+                    if(t<=0)continue;
+
+                    else if(t<t_min){
+                        t_min = t;
+                        nearest = j;
+                    }
+                }
+
+                if(nearest!=-1){
+                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
+
+                    for (int j=0; j<3; j++){
+                        current_color[j] += refracted_color[j] * refractive_index;
+                    }
+                }
+
             }
 
             for(int c=0; c<3; c++){
@@ -464,9 +533,9 @@ public:
         double px = p[2].x-p[0].x;
         double py = p[2].y-p[0].y;
         double pz = p[2].z-p[0].z;
-        Point p(px, py, pz);
+        Point pp(px, py, pz);
 
-        Point normal = cross(q,p);
+        Point normal = cross(q,pp);
 
         normalize(normal);
 
@@ -523,23 +592,52 @@ public:
         for(int i=0; i<3; i++)
             current_color[i] = color[i] * co_efficients[0];
 
-        Point intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
-        Point normal = getNormal(intersec);
-        Point reflection = getReflection(r , normal);
-        Point refraction = getRefraction(r , normal);
+
+        double intersecx = r->start.x+r->dir.x*t;
+        double intersecy = r->start.y+r->dir.y*t;
+        double intersecz = r->start.z+r->dir.z*t;
+        Point intersec(intersecx, intersecy, intersecz);
 
         for(int i=0; i<lights.size();i++){
-            Point direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
+
+            Point normal = getNormal(intersec);
+
+            double dirx = lights[i].x-intersec.x;
+            double diry = lights[i].y-intersec.y;
+            double dirz = lights[i].z-intersec.z;
+            Point direction(dirx, diry, dirz);
+
+            double len = sqrt(direction.x*direction.x +
+                               direction.y*direction.y +
+                                direction.z*direction.z);
+
             direction = normalize(direction);
-            Point start(intersec.x+direction.x*1.0, intersec.y+direction.y*1.0, intersec.z+direction.z*1.0);
+
+            double d = dot(intersec, normal);
+
+            if(d>0){
+                normal.x *= -1;
+                normal.y *= -1;
+                normal.z *= -1;
+            }
+
+            Point reflection = getReflection(r , normal);
+            Point refraction = getRefraction(r , normal);
+
+            double startx = intersec.x+direction.x*1.0;
+            double starty = intersec.y+direction.y*1.0;
+            double startz = intersec.z+direction.z*1.0;
+            Point start(startx, starty, startz);
+
             Ray L(start, direction);
-            bool obstacleFlag = 0;
-            double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+
+            bool obstacleFlag = false;
+
 
             for(int j=0; j<objects.size(); j++){
                 double t = objects[j]->calculateT(&L);
-                if(!( abs(t)>len || t<0 )){
-                    obstacleFlag = 1;
+                if( t <= len && t>0 ){
+                    obstacleFlag = true;
                     break;
                 }
             }
@@ -587,6 +685,35 @@ public:
                         current_color[j] += reflected_color[j] * co_efficients[3];
                     }
                 }
+
+//                start.x = intersec.x + refraction.x * 1.0;
+//                start.y = intersec.y + refraction.y * 1.0;
+//                start.z = intersec.z + refraction.z * 1.0;
+//
+//                Ray refractionRay(start, refraction);
+//                nearest = -1;
+//                double refracted_color[3];
+//                t_min = 9999999;
+//
+//                for(int j=0; j<objects.size();j++){
+//
+//                    double t = objects[j]->calculateT(&refractionRay);
+//
+//                    if(t<=0)continue;
+//
+//                    else if(t<t_min){
+//                        t_min = t;
+//                        nearest = j;
+//                    }
+//                }
+//
+//                if(nearest!=-1){
+//                    objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
+//
+//                    for (int j=0; j<3; j++){
+//                        current_color[j] += refracted_color[j] * refractive_index;
+//                    }
+//                }
             }
 
             for(int c=0; c<3; c++){
@@ -651,65 +778,84 @@ public:
         Point p1(X0+X1*t1, Y0+Y1*t1, Z0+Z1*t1);
         Point p2(X0+X1*t2, Y0+Y1*t2, Z0+Z1*t2);
 
-        bool fx1 = length>0 && (reference_point.x > p1.x || reference_point.x+length < p1.x);
-        bool fy1 = width>0 && (reference_point.y > p1.y || reference_point.y+width < p1.y);
-        bool fz1 = height>0 && (reference_point.y > p1.y || reference_point.y+height < p1.z);
+        Point rp = reference_point;
 
-        bool fx2 = length>0 && (reference_point.x > p2.x || reference_point.x+length < p2.x);
-        bool fy2 = width>0 && (reference_point.y > p2.y || reference_point.y+width < p2.y);
-        bool fz2 = height>0 && (reference_point.y > p2.y || reference_point.y+height < p2.z);
+        bool fx1 = length>0 && (rp.x > p1.x || rp.x+length < p1.x);
+        bool fy1 = width>0 && (rp.y > p1.y || rp.y+width < p1.y);
+        bool fz1 = height>0 && (rp.z > p1.z || rp.z+height < p1.z);
+
+        bool fx2 = length>0 && (rp.x > p2.x || rp.x+length < p2.x);
+        bool fy2 = width>0 && (rp.y > p2.y || rp.y+width < p2.y);
+        bool fz2 = height>0 && (rp.z > p2.z || rp.z+height < p2.z);
 
         bool f1 = fx1 || fy1 || fz1;
         bool f2 = fx2 || fy2 || fz2;
 
-        double t;
-        if(f1 && f2)t = -1;
-        if(f2)t = t1;
-        if(f1)t = t2;
-        if(t2>t1){
-            t = t1;
-        }else{
-            t = t2;
-        }
-        return t;
+        if(f1 && f2)return -1;
+        if(f2)return t1;
+        if(f1)return t2;
+        if(t2>t1)return t1;
+        else return t2;
+
     }
 
 
-   double intersect(Ray *r, double current_color[3], int level){
+double intersect(Ray *r, double current_color[3], int level){
+
         double t = calculateT(r);
 
         if(t<=0)return -1;
 
         if(level == 0)return t;
 
+        double intersecx = r->start.x+r->dir.x*t;
+        double intersecy = r->start.y+r->dir.y*t;
+        double intersecz = r->start.z+r->dir.z*t;
+        Point intersec(intersecx, intersecy, intersecz);
+
+        Point normal = getNormal(intersec);
+
+        Point reflection = getReflection(r , normal);
+
+        Point refraction = getRefraction(r , normal);
+
         for(int i=0; i<3; i++)
             current_color[i] = color[i] * co_efficients[0];
 
-        Point intersec(r->start.x+r->dir.x*t, r->start.y+r->dir.y*t, r->start.z+r->dir.z*t);
-        Point normal = getNormal(intersec);
-        Point reflection = getReflection(r , normal);
-        Point refraction = getRefraction(r , normal);
-
         for(int i=0; i<lights.size();i++){
-            Point direction(lights[i].x-intersec.x, lights[i].y-intersec.y, lights[i].z-intersec.z);
+
+            double dirx = lights[i].x-intersec.x;
+            double diry = lights[i].y-intersec.y;
+            double dirz = lights[i].z-intersec.z;
+            Point direction(dirx, diry, dirz);
+
+            double len = sqrt(direction.x*direction.x +
+                               direction.y*direction.y +
+                                direction.z*direction.z);
+
             direction = normalize(direction);
-            Point start(intersec.x+direction.x*1.0, intersec.y+direction.y*1.0, intersec.z+direction.z*1.0);
+
+            double startx = intersec.x+direction.x*1.0;
+            double starty = intersec.y+direction.y*1.0;
+            double startz = intersec.z+direction.z*1.0;
+            Point start(startx, starty, startz);
+
             Ray L(start, direction);
-            bool obstacleFlag = 0;
-            double len = sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+
+            bool obstacleFlag = false;
 
             for(int j=0; j<objects.size(); j++){
                 double t = objects[j]->calculateT(&L);
-                if(!( abs(t)>len || t<0 )){
-                    obstacleFlag = 1;
+                if( t <= len && t>0 ){
+                    obstacleFlag = true;
                     break;
                 }
             }
 
             if(!obstacleFlag){
                 double lambert = dot(L.dir,normal);
-                double phong = pow(dot(reflection,r->dir),shine);
-
+                double phong = dot(reflection,r->dir);
+                phong = pow(phong, shine);
                 if(lambert < 0)lambert = 0;
                 if(phong < 0)phong = 0;
 
@@ -731,53 +877,49 @@ public:
                 double t_min = 9999999;
 
                 for(int j=0; j<objects.size();j++){
-
                     double t = objects[j]->calculateT(&reflectionRay);
-
                     if(t<=0)continue;
-
-                    if(t<t_min){
+                    else if(t<t_min){
                         t_min = t;
                         nearest = j;
                     }
                 }
-
                 if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
+                    objects[nearest]->intersect(&reflectionRay,reflected_color,level+1);
 
                     for (int j=0; j<3; j++){
                         current_color[j] += reflected_color[j] * co_efficients[3];
                     }
                 }
 
-                                start.x = intersec.x + refraction.x * 1.0;
-                start.y = intersec.y + refraction.y * 1.0;
-                start.z = intersec.z + refraction.z * 1.0;
-
-                Ray refractionRay(start, refraction);
-                nearest = -1;
-                double refracted_color[3];
-                t_min = 9999999;
-
-                for(int j=0; j<objects.size();j++){
-
-                    double t = objects[j]->calculateT(&refractionRay);
-
-                    if(t<=0)continue;
-
-                    else if(t<t_min){
-                        t_min = t;
-                        nearest = j;
-                    }
-                }
-
-                if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
-
-                    for (int j=0; j<3; j++){
-                        current_color[j] += refracted_color[j] * refractive_index;
-                    }
-                }
+//                start.x = intersec.x + refraction.x * 1.0;
+//                start.y = intersec.y + refraction.y * 1.0;
+//                start.z = intersec.z + refraction.z * 1.0;
+//
+//                Ray refractionRay(start, refraction);
+//                nearest = -1;
+//                double refracted_color[3];
+//                t_min = 9999999;
+//
+//                for(int j=0; j<objects.size();j++){
+//
+//                    double t = objects[j]->calculateT(&refractionRay);
+//
+//                    if(t<=0)continue;
+//
+//                    else if(t<t_min){
+//                        t_min = t;
+//                        nearest = j;
+//                    }
+//                }
+//
+//                if(nearest!=-1){
+//                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
+//
+//                    for (int j=0; j<3; j++){
+//                        current_color[j] += refracted_color[j] * refractive_index;
+//                    }
+//                }
             }
 
             for(int c=0; c<3; c++){

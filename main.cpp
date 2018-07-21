@@ -426,19 +426,19 @@ void loadTestData(){
 
     Object *temp;
 
-    Point center(40,0,10);
-    temp = new Sphere(center,10);
-    temp->setColor(1,0,0);
-    temp->setCoefficients(0.4,0.2,0.2,0.2);
-    temp->setShine(10);
-    objects.push_back(temp);
-
-    Point center2(-30,60,20);
-    temp = new Sphere(center2,20);
-    temp->setColor(0,0,1);
-    temp->setCoefficients(0.2,0.2,0.4,0.2);
-    temp->setShine(15);
-    objects.push_back(temp);
+//    Point center(40,0,10);
+//    temp = new Sphere(center,10);
+//    temp->setColor(1,0,0);
+//    temp->setCoefficients(0.4,0.2,0.2,0.2);
+//    temp->setShine(10);
+//    objects.push_back(temp);
+//
+//    Point center2(-30,60,20);
+//    temp = new Sphere(center2,20);
+//    temp->setColor(0,0,1);
+//    temp->setCoefficients(0.2,0.2,0.4,0.2);
+//    temp->setShine(15);
+//    objects.push_back(temp);
 
     Point center3(-15.0, 15.0, 45.0);
     temp = new Sphere(center3,15.0);
@@ -459,42 +459,161 @@ void loadTestData(){
     objects.push_back(temp);
 
     ///triangles
-    Point a1(50,30,0);
-    Point b1(70,60,0);
-    Point c1(50,45,50);
-    Point q[3];q[0] = a1;q[1] = b1;q[2] = c1;
-    temp = new Triangle(q);
-    temp->setColor(1, 0, 0);
-    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    Point a1(50,30,0);
+//    Point b1(70,60,0);
+//    Point c1(50,45,50);
+//    Point q[3];q[0] = a1;q[1] = b1;q[2] = c1;
+//    temp = new Triangle(q);
+//    temp->setColor(1, 0, 0);
+//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    temp->setShine(5);
+//    objects.push_back(temp);
+//
+//    Point a2(70, 60, 0);
+//    Point b2(30, 60, 0);
+//    Point c2(50, 45, 50);
+//    q[0] = a2;q[1] = b2;q[2] = c2;
+//    temp = new Triangle(q);
+//    temp->setColor(1, 0, 0);
+//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    temp->setShine(5);
+//    objects.push_back(temp);
+//
+//    Point a3(30, 60, 0);
+//    Point b3(50, 30, 0);
+//    Point c3(50, 45, 50);
+//    q[0] = a3;q[1] = b3;q[2] = c3;
+//    temp = new Triangle(q);
+//    temp->setColor(1, 0, 0);
+//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    temp->setShine(5);
+//    objects.push_back(temp);
+//
+//    temp = new genQuad(0, 0, 0 , 0, 0, 20);
+//    temp->setVar(1, 1, 1, 0, 0, 0, 0, 0, 0, 100);
+//    temp->setColor(0, 1, 0);
+//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    temp->setShine(10);
+//    objects.push_back(temp);
+//
+//    temp = new genQuad(0, 0, 0 , 0, 0, 15);
+//    temp->setVar(0.0625, 0.04, 0.04, 0, 0, 0, 0, 0, 0, -36);
+//    temp->setColor(1, 0, 0);
+//    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
+//    temp->setShine(15);
+//    objects.push_back(temp);
+}
+
+void LoadActualData(){
+    ifstream file;
+    file.open("scene.txt");
+    Object *temp;
+    string type;
+
+    temp=new Floor(1000, 20);
+    temp->setCoefficients(0.4,0.2,0.2,0.2);
     temp->setShine(5);
     objects.push_back(temp);
 
-    Point a2(70, 60, 0);
-    Point b2(30, 60, 0);
-    Point c2(50, 45, 50);
-    q[0] = a2;q[1] = b2;q[2] = c2;
-    temp = new Triangle(q);
-    temp->setColor(1, 0, 0);
-    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-    temp->setShine(5);
-    objects.push_back(temp);
+    file>>recursion_level;
+    cout<<recursion_level<<endl;
+    file>>imageWidth;
+    imageHeight = imageWidth;
+    cout<<imageWidth<<endl;
+    int numberOfObjects, numberOfLights;
+    file>>numberOfObjects;
+    cout<<numberOfObjects<<endl;
 
-    Point a3(30, 60, 0);
-    Point b3(50, 30, 0);
-    Point c3(50, 45, 50);
-    q[0] = a3;q[1] = b3;q[2] = c3;
-    temp = new Triangle(q);
-    temp->setColor(1, 0, 0);
-    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-    temp->setShine(5);
-    objects.push_back(temp);
+    for(int i=0; i<numberOfObjects; i++){
+        file>>type;
+        cout<<i<<". "<<type<<endl;
 
-    temp = new genQuad(0, 0, 0 , 0, 0, 5);
-    temp->setVar(1, 1, 1, 0, 0, 0, -20, -20, -20, 200);
-    temp->setColor(1, 0, 1);
-    temp->setCoefficients(0.4, 0.2, 0.1, 0.3);
-    temp->setShine(3);
-    objects.push_back(temp);
+        if(!type.compare("sphere")){
+            double x,y,z,a,b,c,d,radius,c1,c2,c3,shine;
+
+            file>>x>>y>>z;
+            file>>radius;
+            file>>c1>>c2>>c3;
+            file>>a>>b>>c>>d;
+            file>>shine;
+
+            cout<<" "<<x<<" "<<y<<" "<<z<<" "<<endl;
+            cout<<" "<<radius<<" "<<endl;
+            cout<<" "<<c1<<" "<<c2<<" "<<c3<<" "<<endl;
+            cout<<" "<<a<<" "<<b<<" "<<c<<" "<<d<<" "<<endl;
+            cout<<" "<<shine<<" "<<endl;
+
+            Point center(x,y,z);
+            temp = new Sphere(center,radius);
+            temp->setColor(c1,c2,c3);
+            temp->setCoefficients(a,b,c,d);
+            temp->setShine(shine);
+            objects.push_back(temp);
+        }
+
+        else if(!type.compare("triangle")){
+            double x1,y1,z1,x2,y2,z2,x3,y3,z3,c1,c2,c3,a,b,c,d,shine;
+
+            file>>x1>>y1>>z1;
+            file>>x2>>y2>>z2;
+            file>>x3>>y3>>z3;
+            file>>c1>>c2>>c3;
+            file>>a>>b>>c>>d;
+            file>>shine;
+
+            cout<<" "<<x1<<" "<<y1<<" "<<z1<<" "<<endl;
+            cout<<" "<<x2<<" "<<y2<<" "<<z2<<" "<<endl;
+            cout<<" "<<x3<<" "<<y3<<" "<<z3<<" "<<endl;
+            cout<<" "<<c1<<" "<<c2<<" "<<c3<<" "<<endl;
+            cout<<" "<<a<<" "<<b<<" "<<c<<" "<<d<<" "<<endl;
+            cout<<" "<<shine<<" "<<endl;
+
+            Point a2(x1,y1,z1);
+            Point b2(x2,y2,z2);
+            Point cc2(x3,y3,z3);
+            Point q[3];q[0] = a2;q[1] = b2;q[2] = cc2;
+            temp = new Triangle(q);
+            temp->setColor(c1,c2,c3);
+            temp->setCoefficients(a,b,c,d);
+            temp->setShine(shine);
+            objects.push_back(temp);
+        }
+
+        else if(!type.compare("general")){
+            double A,B,C,D,E,F,G,H,I,J,x,y,z,a,b,c,d,c1,c2,c3,shine,l,w,h;
+
+            file>>A>>B>>C>>D>>E>>F>>G>>H>>I>>J;
+            file>>x>>y>>z>>l>>w>>h;
+            file>>c1>>c2>>c3;
+            file>>a>>b>>c>>d;
+            file>>shine;
+
+            cout<<" "<<A<<" "<<B<<" "<<C<<" "<<D<<" "<<E<<" "<<F<<" "<<G<<" "<<H<<" "<<I<<" "<<J<<endl;
+            cout<<" "<<x<<" "<<y<<" "<<z<<" "<<l<<" "<<w<<" "<<h<<endl;
+            cout<<" "<<c1<<" "<<c2<<" "<<c3<<" "<<endl;
+            cout<<" "<<a<<" "<<b<<" "<<c<<" "<<d<<endl;
+            cout<<" "<<shine<<endl;
+
+            temp = new genQuad(x,y,z,l,w,h);
+            temp->setVar(A,B,C,D,E,F,G,H,I,J);
+            temp->setColor(c1,c2,c3);
+            temp->setCoefficients(a,b,c,d);
+            temp->setShine(shine);
+            objects.push_back(temp);
+        }
+
+    }
+    file>>numberOfLights;
+    cout<<numberOfLights<<endl;
+    for(int i=0; i<numberOfLights; i++){
+        cout<<i<<". light"<<endl;
+        double a,b,c;
+        file>>a>>b>>c;
+        cout<<a<<" "<<b<<" "<<c<<endl;
+        Point light(a,b,c);
+        lights.push_back(light);
+    }
+    file.close();
 }
 
 void freeMemory(){
@@ -503,8 +622,8 @@ void freeMemory(){
 }
 
 int main(int argc, char **argv){
+    //LoadActualData();
     loadTestData();
-    cout<<imageWidth<<endl;
 	glutInit(&argc,argv);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(0, 0);
