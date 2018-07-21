@@ -848,7 +848,6 @@ public:
 
         Point reflection = getReflection(r , normal);
 
-        Point refraction = getRefraction(r , normal);
 
         for(int i=0; i<3; i++)
             current_color[i] = color[i] * co_efficients[0];
@@ -923,6 +922,7 @@ public:
                     }
                 }
 
+                Point refraction = getRefraction(r , normal);
                 start.x = intersec.x + refraction.x * 1.0;
                 start.y = intersec.y + refraction.y * 1.0;
                 start.z = intersec.z + refraction.z * 1.0;
@@ -961,7 +961,4 @@ public:
 
         return t;
     }
-
-
-
 };

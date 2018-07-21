@@ -132,11 +132,11 @@ void Capture(){
 
             Ray ray(pos, dir);
 
-            double dummyColorAt[3];
+            double set_color[3];
 
             for(int k=0; k<objects.size();k++){
 
-                double t = objects[k]->intersect(&ray,dummyColorAt,0);
+                double t = objects[k]->intersect(&ray,set_color,0);
 
                 if(t<=0)continue;
 
@@ -146,11 +146,9 @@ void Capture(){
                 }
             }
 
-            //double colorAt[3];
-
             if(nearest!=-1){
-                objects[nearest]->intersect(&ray,dummyColorAt,1);
-                image.set_pixel(j,i,dummyColorAt[0],dummyColorAt[1],dummyColorAt[2]);
+                objects[nearest]->intersect(&ray,set_color,1);
+                image.set_pixel(j,i,set_color[0],set_color[1],set_color[2]);
             }
         }
     }
