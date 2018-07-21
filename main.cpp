@@ -15,7 +15,7 @@ extern vector<Object*> objects;
 extern vector<Point> lights;
 
 
-Point pos(0,-100,10);
+Point pos(-50,-100,50);
 Point l(0,1,0);
 Point r(1,0,0);
 Point u(0,0,1);

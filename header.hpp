@@ -200,11 +200,11 @@ public:
             Point start(startx, starty, startz);
 
             Ray L(start, direction);
-
+            double color[3];
             bool obstacleFlag = false;
 
             for(int j=0; j<objects.size(); j++){
-                double t = objects[j]->calculateT(&L);
+                double t = objects[j]->intersect(&L,color,0);
                 if( t <= len && t>0 ){
                     obstacleFlag = true;
                     break;
@@ -236,7 +236,7 @@ public:
                 double t_min = 9999999;
 
                 for(int j=0; j<objects.size();j++){
-                    double t = objects[j]->calculateT(&reflectionRay);
+                    double t = objects[j]->intersect(&reflectionRay,reflected_color,0);
                     if(t<=0)continue;
                     else if(t<t_min){
                         t_min = t;
@@ -262,7 +262,7 @@ public:
 
                 for(int j=0; j<objects.size();j++){
 
-                    double t = objects[j]->calculateT(&refractionRay);
+                    double t = objects[j]->intersect(&reflectionRay,refracted_color,0);
 
                     if(t<=0)continue;
 
@@ -273,7 +273,7 @@ public:
                 }
 
                 if(nearest!=-1){
-                    double t = objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
+                    objects[nearest]->intersect(&refractionRay,refracted_color,level+1);
 
                     for (int j=0; j<3; j++){
                         current_color[j] += refracted_color[j] * refractive_index;
@@ -420,9 +420,9 @@ public:
             Ray L(start, direction);
 
             bool obstacleFlag = false;
-
+            double color[3];
             for(int j=0; j<objects.size(); j++){
-                double t = objects[j]->calculateT(&L);
+                double t = objects[j]->intersect(&L,color,0);
                 if( t <= len && t>0 ){
                     obstacleFlag = true;
                     break;
@@ -457,7 +457,7 @@ public:
 
                 for(int j=0; j<objects.size();j++){
 
-                    double t = objects[j]->calculateT(&reflectionRay);
+                    double t = objects[j]->intersect(&reflectionRay,reflected_color,0);
 
                     if(t<=0)continue;
 
@@ -485,7 +485,7 @@ public:
 
                 for(int j=0; j<objects.size();j++){
 
-                    double t = objects[j]->calculateT(&refractionRay);
+                    double t = objects[j]->intersect(&refractionRay,refracted_color,level+1);
 
                     if(t<=0)continue;
 
@@ -634,7 +634,7 @@ public:
 
             direction = normalize(direction);
 
-            double d = dot(intersec, normal);
+            double d = dot(direction, normal);
 
             if(d>0){
                 normal.x *= -1;
@@ -654,9 +654,9 @@ public:
 
             bool obstacleFlag = false;
 
-
+            double color[3];
             for(int j=0; j<objects.size(); j++){
-                double t = objects[j]->calculateT(&L);
+                double t = objects[j]->intersect(&L,color,0);
                 if( t <= len && t>0 ){
                     obstacleFlag = true;
                     break;
@@ -689,7 +689,7 @@ public:
 
                 for(int j=0; j<objects.size();j++){
 
-                    double t = objects[j]->calculateT(&reflectionRay);
+                    double t = objects[j]->intersect(&reflectionRay,reflected_color,0);
 
                     if(t<=0)continue;
 
@@ -872,9 +872,9 @@ double intersect(Ray *r, double current_color[3], int level){
             Ray L(start, direction);
 
             bool obstacleFlag = false;
-
+            double color[3];
             for(int j=0; j<objects.size(); j++){
-                double t = objects[j]->calculateT(&L);
+                double t = objects[j]->intersect(&L,color,0);
                 if( t <= len && t>0 ){
                     obstacleFlag = true;
                     break;
@@ -906,7 +906,7 @@ double intersect(Ray *r, double current_color[3], int level){
                 double t_min = 9999999;
 
                 for(int j=0; j<objects.size();j++){
-                    double t = objects[j]->calculateT(&reflectionRay);
+                    double t = objects[j]->intersect(&reflectionRay,reflected_color,level+1);
                     if(t<=0)continue;
                     else if(t<t_min){
                         t_min = t;
